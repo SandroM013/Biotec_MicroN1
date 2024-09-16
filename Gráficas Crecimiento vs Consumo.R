@@ -3,6 +3,29 @@ data_glu <- read_excel("Tablas.xlsx", sheet = "Gluc")
 data_ara <- read_excel("Tablas.xlsx", sheet = "Ara")
 data_alm <- read_excel("Tablas.xlsx", sheet = "Alm")
 
+curva_biomasa <- lm(Biomasa ~ D.O.REAL, data = data_cps)
+
+reframeEscala <- function(df){
+  
+  newdf <- df %>%
+    reframe(Time = Tiempo * 4,
+            DOR1 = DO1 * D,
+            DOR2 = DO2 * D,
+            DOR3 = DO3 * D,
+            Sustrato = Consumo/1000) %>%
+    gather(key = "DOReal", value = "Abs", 2:4) 
+  
+  newdf <- newdf%>%
+    mutate(Biomasa = predict(curva_biomasa, newdata = data.frame(D.O.REAL = newdf$Abs)))
+  
+  return(newdf)
+  
+}
+
+data_creGlu <- reframeEscala(data_glu)
+data_creSac <- reframeEscala(data_sac)
+data_creAra <- reframeEscala(data_ara)
+data_creAlm <- reframeEscala(data_alm)
 
 graficaCurva <- function(df){
   df %>%
@@ -28,43 +51,5 @@ graficaCurva(data_creGlu)
 graficaCurva(data_creSac)
 graficaCurva(data_creAra)
 
-
-
-
-data_creGlu <- data_glu %>%
-  reframe(Time = Tiempo * 4,
-          DOR1 = DO1 * D,
-          DOR2 = DO2 * D,
-          DOR3 = DO3 * D,
-          Sustrato = Consumo/1000) %>%
-  gather(key = "DOReal", value = "Abs", 2:4) %>%
-  mutate(Biomasa = predict(curva_biomasa, newdata = data.frame(D.O.REAL = data_creGlu$Abs)))
-
-data_creSac <- data_sac %>%
-  reframe(Time = Tiempo * 4,
-          DOR1 = DO1 * D,
-          DOR2 = DO2 * D,
-          DOR3 = DO3 * D,
-          Sustrato = Consumo/1000) %>%
-  gather(key = "DOReal", value = "Abs", 2:4) %>%
-  mutate(Biomasa = predict(curva_biomasa, newdata = data.frame(D.O.REAL = data_creSac$Abs)))
-
-data_creAra <- data_ara %>%
-  reframe(Time = Tiempo * 4,
-          DOR1 = DO1 * D,
-          DOR2 = DO2 * D,
-          DOR3 = DO3 * D,
-          Sustrato = Consumo/1000) %>%
-  gather(key = "DOReal", value = "Abs", 2:4) %>%
-  mutate(Biomasa = predict(curva_biomasa, newdata = data.frame(D.O.REAL = data_creAra$Abs)))
-
-data_creAlm <- data_alm %>%
-  reframe(Time = Tiempo * 4,
-          DOR1 = DO1 * D,
-          DOR2 = DO2 * D,
-          DOR3 = DO3 * D,
-          Sustrato = Consumo/1000) %>%
-  gather(key = "DOReal", value = "Abs", 2:4) %>%
-  mutate(Biomasa = predict(curva_biomasa, newdata = data.frame(D.O.REAL = data_creAlm$Abs)))
 
 

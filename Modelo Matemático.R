@@ -21,20 +21,18 @@ output1 <- ode(circuits, times = t, y = state, parms = parameters)
 
 dfout <- as.data.frame(output1)
 dfout <- dfout %>%
-  mutate(Sutrato = S/5.55,
+  mutate(Sutrato = S/1275,
          Biomasa = predict(curva_biomasa, newdata = data.frame(D.O.REAL = dfout$N)))
                            
-write.csv(dfout, file = "data_modelada.csv")
-
 dfout  %>%
   ggplot(aes(x = time)) +
   geom_smooth(aes(y = Biomasa, color = "Biomasa (g/L)"), size = 1, linetype = "dotted") +
   geom_point(aes(y = Biomasa, color = "Biomasa (g/L)"), size = 2) +
-  geom_smooth(aes(y = S/5000, color = "Sustrato (g/L)"), size = 1, linetype = "dashed") +  # Ajustar el Sustrato a escala
-  geom_point(aes(y = S/5000, color = "Sustrato (g/L)"), size = 2) +  # Ajustar el Sustrato a escala
+  geom_smooth(aes(y = S/1275, color = "Sustrato (g/L)"), size = 1, linetype = "dashed") +  # Ajustar el Sustrato a escala
+  geom_point(aes(y = S/1275, color = "Sustrato (g/L)"), size = 2) +  # Ajustar el Sustrato a escala
   scale_y_continuous(
     name = "Biomasa (g/L)",
-    sec.axis = sec_axis(~ . * 1000, name = "Sustrato (g/L)")
+    sec.axis = sec_axis(~ . *1000, name = "Sustrato (g/L)")
   ) +
   labs(x = "Tiempo (h)", color = "") +
   theme_classic() +
@@ -64,8 +62,4 @@ data_ES %>%
   theme(legend.position = "top") +
   scale_color_manual(values = c("Biomasa experimental (g/L)" = "blue", "Biomasa simulada (g/L)" = "orange"))
 
-chist <- data_ES[2:3] %>%
-  mutate(X = ((Biomasa_exp - Biomasa_sim))/Biomasa_sim)
-
-
-pchisq(sum(chist$X), df = 8, lower.tail = F)
+write.csv(dfout, file = "data_modelada.csv")

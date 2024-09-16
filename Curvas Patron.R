@@ -9,7 +9,7 @@ data_exp %>%
   ggplot(aes(x =Conc, y = D.O.REAL)) +
   geom_smooth(method = "lm", se = T) + 
   geom_point(aes(y = Abs)) +
-  stat_boxplot(aes(group = as.factor(Conc), y = Abs), geom = "errorbar") +
+  stat_boxplot(aes(group = as.factor(Conc), y = Abs), geom = "errorbar", width = 2.5) +
   labs(y = "D.O 625 nm",
        x = "Concentración Glucosa (mg/L) ") +
   scale_x_continuous(breaks = seq(10, 100, 5)) +
